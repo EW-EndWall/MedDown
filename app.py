@@ -32,7 +32,10 @@ def download_video(data):
 
     # * file name changle
     default_filename = stream.default_filename
-    os.rename(os.path.join(download_dir, default_filename), os.path.join(download_dir, data["title"]))
+    os.rename(
+        os.path.join(download_dir, default_filename), 
+        os.path.join(download_dir, data["title"])
+        )
 
 def download_audio(data):
     yt = YouTube(data["url"])
@@ -41,7 +44,10 @@ def download_audio(data):
     
     # * file name changle
     default_filename = stream.default_filename
-    os.rename(os.path.join(download_dir, default_filename), os.path.join(download_dir, data["title"]))
+    os.rename(
+        os.path.join(download_dir, default_filename), 
+        os.path.join(download_dir, data["title"])
+        )
 
 config_file = 'settings.ini'
 
@@ -75,10 +81,28 @@ def open_settings_window():
     settings_window.iconbitmap("favicon.ico")
 
     # *Create download directory label and button
-    download_dir_label = Label(settings_window, text=download_dir)
-    download_dir_label.grid(row=0, column=0, padx=5, pady=5)
-    set_download_dir_button = Button(settings_window, text="Set Download Directory", command=set_download_dir)
-    set_download_dir_button.grid(row=0, column=1, padx=5, pady=5)
+    download_dir_label = Label(
+        settings_window, 
+        text=download_dir
+        )
+    download_dir_label.grid(
+        row=0, 
+        column=0, 
+        padx=5, 
+        pady=5
+        )
+    set_download_dir_button = Button(
+        settings_window, 
+        text="Set Download Directory", 
+        cursor="hand2",
+        command=set_download_dir
+        )
+    set_download_dir_button.grid(
+        row=0, 
+        column=1, 
+        padx=5, 
+        pady=5
+        )
 
     # * Function to save settings and close window
     def save_settings():
@@ -87,8 +111,18 @@ def open_settings_window():
         settings_window.destroy()
 
     # * Create save button
-    save_button = Button(settings_window, text="Save", command=save_settings)
-    save_button.grid(row=1, column=1, padx=5, pady=5)
+    save_button = ttk.Button(
+        settings_window, 
+        text="Save",
+        cursor="hand2", 
+        command=save_settings
+        )
+    save_button.grid(
+        row=1, 
+        column=1, 
+        padx=5, 
+        pady=5
+        )
 
     # * Run settings window
     settings_window.mainloop()
@@ -252,13 +286,19 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
         )
     
     def on_title_change(*args):
-        title_selection(dataUrl, yt_title_var.get())
+        title_selection(
+            dataUrl, 
+            yt_title_var.get()
+            )
 
     yt_title_var = tk.StringVar(
         value= bytes(dataTitle, "utf-8").decode("raw_unicode_escape").encode("iso-8859-1").decode("utf-8"),
         )
 
-    yt_title_var.trace('w',on_title_change)
+    yt_title_var.trace(
+        'w',
+        on_title_change
+        )
     yt_title = Entry(
         content_container_2,
         textvariable=yt_title_var,
@@ -321,17 +361,28 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
                 container,
                 image=iconYoutube
                 )
-            content_null_icon.place(relx=0.5, rely=0.5, anchor="center")
+            content_null_icon.place(
+                relx=0.5, 
+                rely=0.5, 
+                anchor="center"
+                )
 
             url_text = Label(
                 container, 
                 text="There is nothing here.",
                 )
-            url_text.place(relx=0.5, rely=0.6, anchor="center")
+            url_text.place(
+                relx=0.5, 
+                rely=0.6, 
+                anchor="center"
+                )
 
-    yt_remov = Button(
+    yt_remov = ttk.Button(
         content_container_1, 
         text="x",
+        bootstyle="secondary",
+        padding=(3, 0),
+        cursor="hand2",
         command=lambda: destroy_button(dataUrl)
         )
     yt_remov.place(
@@ -349,6 +400,7 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
         content_container_3, 
         image=iconDownload2, 
         bootstyle="secondary-outline", 
+        cursor="hand2",
         command=lambda: yt_single_download(dataUrl)
         )
     yt_media_download_btn.pack(
@@ -367,7 +419,9 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
         )
     yt_media_download_sellect_btn = ttk.Checkbutton(
         content_container_3, 
-        text='Video / Sound', bootstyle="secondary-round-toggle", 
+        text='Video / Sound', 
+        bootstyle="secondary-round-toggle", 
+        cursor="hand2",
         variable=yt_media_download_sellect_data, 
         command=lambda: type_selection(dataUrl, yt_media_download_sellect_data.get())
         )
@@ -496,40 +550,81 @@ root.resizable(False, False)
 
 # ? main container
 container = tk.Frame(root)
-container.pack(fill="both", expand=True)
+container.pack(
+    fill="both", 
+    expand=True
+    )
 
 # ? header
-header = tk.Frame(container, background="#fff", padx=10, pady=10)
-header.pack(side="top", fill="both")
+header = tk.Frame(
+    container, 
+    background="#fff", 
+    padx=10, 
+    pady=10
+    )
+header.pack(
+    side="top", 
+    fill="both"
+    )
 
 # ? content
-content = tk.Frame(container, background="#fff", padx=5, pady=5)
-content.pack(fill="both", expand=True)
+content = tk.Frame(
+    container, 
+    background="#fff", 
+    padx=5, 
+    pady=5
+    )
+content.pack(
+    fill="both", 
+    expand=True
+    )
 
 #----------------------------------
 # * Scrollbar
 scrollbar = tk.Scrollbar(content)
-scrollbar.pack(side="right", fill="y")
+scrollbar.pack(
+    side="right", 
+    fill="y"
+    )
 
 # * Canvas
-contentCanvas = tk.Canvas(content, yscrollcommand=scrollbar.set)
-contentCanvas.pack(side="top",fill="both", expand=True)
+contentCanvas = tk.Canvas(
+    content, 
+    yscrollcommand=scrollbar.set
+    )
+contentCanvas.pack(
+    side="top",
+    fill="both", 
+    expand=True
+    )
 
 
 # * Attach scrollbar to canvas
-scrollbar.config(command=contentCanvas.yview)
+scrollbar.config(
+    command=contentCanvas.yview,
+    )
 
 # * Add content to canvas
 content = tk.Frame(contentCanvas)
-content.pack(fill="both", expand=True)
+content.pack(
+    fill="both", 
+    expand=True
+    )
 content.bind("<Configure>", lambda e: contentCanvas.configure(scrollregion=contentCanvas.bbox("all")))
 
 contentCanvas.create_window((0, 0), window=content)
 
 
 # ? footer
-footer = tk.Frame(container, background="#B0A8B9", pady=5)
-footer.pack(side="bottom", fill="both")
+footer = tk.Frame(
+    container, 
+    background="#B0A8B9", 
+    pady=5
+    )
+footer.pack(
+    side="bottom", 
+    fill="both"
+    )
 
 # ---------------------
 
@@ -565,20 +660,65 @@ iconAdd = icon_to_image(
     fill="#4267B2", 
     scale_to_width=32
     )
-iconSettings = icon_to_image("cogs", fill="#797D7F", scale_to_width=22)
-iconUpdate = icon_to_image("sync", fill="#797D7F", scale_to_width=18)
-iconInfo = icon_to_image("info-circle", fill="#797D7F", scale_to_width=18)
-iconClearOk = icon_to_image("trash-restore", fill="#797D7F", scale_to_width=16)
-iconClear = icon_to_image("trash-alt", fill="#797D7F", scale_to_width=16)
-iconClock = icon_to_image("clock", fill="#797D7F", scale_to_width=18)
+iconSettings = icon_to_image(
+    "cogs",
+    fill="#797D7F", 
+    scale_to_width=22
+    )
+iconUpdate = icon_to_image(
+    "sync", 
+    fill="#797D7F", 
+    scale_to_width=18
+    )
+iconInfo = icon_to_image(
+    "info-circle", 
+    fill="#797D7F", 
+    scale_to_width=18
+    )
+iconClearOk = icon_to_image(
+    "trash-restore", 
+    fill="#797D7F", 
+    scale_to_width=16
+    )
+iconClear = icon_to_image(
+    "trash-alt", 
+    fill="#797D7F", 
+    scale_to_width=16
+    )
+iconClock = icon_to_image(
+    "clock", 
+    fill="#797D7F", 
+    scale_to_width=18
+    )
 
 
-add_url_btn = ttk.Button(header,image=iconAdd, bootstyle="secondary-outline", command=add_url)
-add_url_btn.pack(side="left", padx=10)
-Hovertip(add_url_btn,'Paste the copied url.', hover_delay=1000)
+add_url_btn = ttk.Button(
+    header,
+    image=iconAdd, 
+    bootstyle="secondary-outline", 
+    cursor="hand2",
+    command=add_url
+    )
+add_url_btn.pack(
+    side="left", 
+    padx=10
+    )
+Hovertip(
+    add_url_btn,
+    'Paste the copied url.', 
+    hover_delay=1000
+    )
 
-status_label = tk.Label(header, text="", wraplength=300)
-status_label.place(relx=0.5, rely=0.5, anchor="center")
+status_label = tk.Label(
+    header, 
+    text="", 
+    wraplength=300
+    )
+status_label.place(
+    relx=0.5, 
+    rely=0.5, 
+    anchor="center"
+    )
 
 def media_download_all():
     yt_data = dataRead()
@@ -604,36 +744,96 @@ def media_all_sellect():
             )
 
 
-media_download_btn = ttk.Button(header,image=iconDownload, bootstyle="secondary-outline", command=media_download_all)
-media_download_btn.pack(side="right", padx=10)
-Hovertip(media_download_btn,'Start download.', hover_delay=1000)
+media_download_btn = ttk.Button(
+    header,
+    image=iconDownload, 
+    bootstyle="secondary-outline", 
+    cursor="hand2",
+    command=media_download_all
+    )
+media_download_btn.pack(
+    side="right", 
+    padx=10
+    )
+Hovertip(
+    media_download_btn,
+    'Start download.', 
+    hover_delay=1000
+    )
 
 media_download_sellect_data = tk.BooleanVar()
-media_download_sellect_btn = ttk.Checkbutton(header, text='Video / Sound', bootstyle="secondary-round-toggle", variable=media_download_sellect_data, command=media_all_sellect)
+media_download_sellect_btn = ttk.Checkbutton(
+    header, 
+    text='Video / Sound', 
+    bootstyle="secondary-round-toggle", 
+    cursor="hand2",
+    variable=media_download_sellect_data, 
+    command=media_all_sellect
+    )
 media_download_sellect_btn.pack(side="right")
-Hovertip(media_download_sellect_btn,'Select media type.', hover_delay=1000)
+Hovertip(
+    media_download_sellect_btn,
+    'Select media type.', 
+    hover_delay=1000
+    )
 
 
-media_leng = tk.Label(header, text="")
-media_leng.place(relx=0.5, rely=0.7, anchor="center")
+media_leng = tk.Label(
+    header, 
+    text=""
+    )
+media_leng.place(
+    relx=0.5, 
+    rely=0.7, 
+    anchor="center"
+    )
 
 # * footer
 
 # ? settings button
-settings_btn = ttk.Button(footer,image=iconSettings, bootstyle="secondary-outline", command=open_settings_window)
+settings_btn = ttk.Button(
+    footer,
+    image=iconSettings, 
+    bootstyle="secondary-outline", 
+    cursor="hand2",
+    command=open_settings_window
+    )
 settings_btn.pack(side="right", padx=5)
-Hovertip(settings_btn,'From here, you can make the settings.', hover_delay=1000)
+Hovertip(
+    settings_btn,
+    'From here, you can make the settings.', 
+    hover_delay=1000
+    )
 
 # ? update button
-update_btn = ttk.Button(footer,image=iconUpdate, bootstyle="secondary-outline")
+update_btn = ttk.Button(
+    footer,
+    image=iconUpdate, 
+    bootstyle="secondary-outline",
+    cursor="hand2",
+    )
 update_btn.pack(side="right", padx=5)
-Hovertip(update_btn,'Check for update.', hover_delay=1000)
+Hovertip(
+    update_btn,
+    'Check for update.', 
+    hover_delay=1000
+    )
 update_btn.config(state="disabled")
 
 # ? about button
-about_btn = ttk.Button(footer,image=iconInfo, bootstyle="secondary-outline", command=open_about_window)
+about_btn = ttk.Button(
+    footer,
+    image=iconInfo, 
+    bootstyle="secondary-outline", 
+    cursor="hand2",
+    command=open_about_window
+    )
 about_btn.pack(side="right", padx=5)
-Hovertip(about_btn,'Software information.', hover_delay=1000)
+Hovertip(
+    about_btn,
+    'Software information.', 
+    hover_delay=1000
+    )
 
 # -----
 
@@ -657,20 +857,55 @@ def download_destroy_clear():
 
 
 # ? download ok clear button
-clear_ok_btn = ttk.Button(footer,image=iconClearOk, bootstyle="secondary-outline", command=download_destroy_clear)
+clear_ok_btn = ttk.Button(
+    footer,
+    image=iconClearOk, 
+    bootstyle="secondary-outline", 
+    cursor="hand2",
+    command=download_destroy_clear
+    )
 clear_ok_btn.pack(side="left", padx=5)
-Hovertip(clear_ok_btn,'Clear downloads \nJust downloaded.', hover_delay=1000)
+Hovertip(
+    clear_ok_btn,
+    'Clear downloads \nJust downloaded.', 
+    hover_delay=1000
+    )
 clear_ok_btn.config(state="disabled")
 
 # ? clear all button
-clear_btn = ttk.Button(footer,image=iconClear, bootstyle="secondary-outline", command=destroy_all)
-clear_btn.pack(side="left", padx=5)
-Hovertip(clear_btn,'Clean all.', hover_delay=1000)
+clear_btn = ttk.Button(
+    footer,
+    image=iconClear, 
+    bootstyle="secondary-outline", 
+    cursor="hand2",
+    command=destroy_all
+    )
+clear_btn.pack(
+    side="left", 
+    padx=5
+    )
+Hovertip(
+    clear_btn,
+    'Clean all.', 
+    hover_delay=1000
+    )
 
 # ? slow download mode button
-slow_download_btn = ttk.Button(footer,image=iconClock, bootstyle="secondary-outline")
-slow_download_btn.pack(side="left", padx=5)
-Hovertip(slow_download_btn,'Slow download.', hover_delay=1000)
+slow_download_btn = ttk.Button(
+    footer,
+    image=iconClock, 
+    bootstyle="secondary-outline",
+    cursor="hand2",
+    )
+slow_download_btn.pack(
+    side="left", 
+    padx=5
+    )
+Hovertip(
+    slow_download_btn,
+    'Slow download.', 
+    hover_delay=1000
+    )
 slow_download_btn.config(state="disabled")
 
 #-------------
@@ -697,20 +932,30 @@ if len(yt_data) > 0:
             item["author"],
             item["type"],
             )
-    media_leng.config(text= "Media : ( " + str(len(yt_data)) + " )" )
+    media_leng.config(
+        text= "Media : ( " + str(len(yt_data)) + " )" 
+        )
 else:
     # ? default content
     content_null_icon = ttk.Label(
         container,
         image=iconYoutube
         )
-    content_null_icon.place(relx=0.5, rely=0.5, anchor="center")
+    content_null_icon.place(
+        relx=0.5, 
+        rely=0.5, 
+        anchor="center"
+        )
 
     url_text = Label(
         container, 
         text="There is nothing here.",
         )
-    url_text.place(relx=0.5, rely=0.6, anchor="center")
+    url_text.place(
+        relx=0.5, 
+        rely=0.6, 
+        anchor="center"
+        )
 
 
 
