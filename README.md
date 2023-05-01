@@ -16,11 +16,7 @@ Features
   - show media time
   - show channel name
 
-What to do
-  - select quality
-  - delete download
-  - slow download
-  - update system
+
 
 Screenshots
 
@@ -32,3 +28,8 @@ Screenshots
 
 pytube was used for download, so it has problems..
 
+What to do
+  - select quality
+  - delete download
+  - slow download
+  - update system
