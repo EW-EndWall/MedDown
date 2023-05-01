@@ -1,20 +1,12 @@
-from tkinter import Tk, ttk,Label,Entry,Button, Text, filedialog, Scrollbar
+from tkinter import Tk,Label,Entry,Button, filedialog
 import tkinter as tk
 from pytube import YouTube, Playlist
 import os
 import configparser
-from urllib.parse import urlparse, parse_qs
-
-from PIL import ImageTk, Image
-import io
-import requests
-
-from tkfontawesome import icon_to_image
 from idlelib.tooltip import Hovertip
 
 
-
-# ! playlist cekme
+# ! playlist 
 # playlist = Playlist("https://www.youtube.com/playlist?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG")
 # playlist._video_regex = re.compile(r"\"url\":\"(/watch\?v=[\w-]*)")
 
@@ -23,27 +15,26 @@ from idlelib.tooltip import Hovertip
 #     stream = video.streams.first()
 #     stream.download()
 
-# ! kalite listeleme
+# ! quality list
 # url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 # yt = YouTube(url)
 
-# # Tüm video kalitesi seçeneklerini listele
 # for stream in yt.streams.filter(type="video"):
 #     print(stream)
 
-# # Tüm ses kalitesi seçeneklerini listele
 # for stream in yt.streams.filter(type="audio"):
 #     print(stream)
 
 def download_video(data):
-
-    print("video")
     yt = YouTube(data["url"])
     stream = yt.streams.first()
     stream.download(download_dir)
 
-def download_audio(data):
+    # * file name changle
+    default_filename = stream.default_filename
+    os.rename(os.path.join(download_dir, default_filename), os.path.join(download_dir, data["title"]))
 
+def download_audio(data):
     yt = YouTube(data["url"])
     stream = yt.streams.filter(only_audio=True).first()
     stream.download(download_dir)
@@ -51,11 +42,6 @@ def download_audio(data):
     # * file name changle
     default_filename = stream.default_filename
     os.rename(os.path.join(download_dir, default_filename), os.path.join(download_dir, data["title"]))
-
-    # Open file dialog to select download directory
-    # download_dir = filedialog.askdirectory()
-    # Download audio to selected directory
-    # stream.download(output_path=download_dir)
 
 config_file = 'settings.ini'
 
@@ -131,6 +117,7 @@ def open_about_window():
 
 # * url check
 def is_valid_youtube_url(url):
+    from urllib.parse import urlparse
     parsed_url = urlparse(url)
     if parsed_url.netloc != 'www.youtube.com':
         return False
@@ -175,10 +162,10 @@ def dataRemove(dataUrl):
 
 # * content media box create
 def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
-    
-    import ttkbootstrap as ttk 
-    from tkfontawesome import icon_to_image
-    from idlelib.tooltip import Hovertip
+
+    from PIL import ImageTk, Image
+    import io
+    import requests
 
     def type_selection(dataUrl, dataType) :
         yt_data = dataRead()
@@ -195,13 +182,6 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
                 item['title'] = dataTitle
                 dataWrite(yt_data)
                 return 
-            
-    data = {
-        "title" : dataTitle,
-        "url": dataUrl,
-        "type": dataType,
-    }
-
 
     content_container = tk.Frame(
         content,
@@ -273,6 +253,7 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
     
     def on_title_change(*args):
         title_selection(dataUrl, yt_title_var.get())
+
     yt_title_var = tk.StringVar(
         value= bytes(dataTitle, "utf-8").decode("raw_unicode_escape").encode("iso-8859-1").decode("utf-8"),
         )
@@ -303,7 +284,7 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
     
     yt_quality = Label(
         content_container_2, 
-        text="kalite",
+        text="quality",
         padx=10, 
         pady=0
         )
@@ -336,11 +317,6 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
         else:
             media_leng.config(text= "Media : ( 0 )" )
             # ? default content
-            iconYoutube = icon_to_image(
-                "searchengin", 
-                fill="#4267B2", 
-                scale_to_width=64
-                )
             content_null_icon = tk.Label(
                 container,
                 image=iconYoutube
@@ -363,13 +339,6 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
         rely=0.1
         )
     
-    from tkfontawesome import icon_to_image
-    iconDownload2 = icon_to_image(
-        "download", 
-        fill="#4267B2", 
-        scale_to_width=28
-        )
-    
     def yt_single_download(dataUrl):
         yt_data = dataRead()
         for item in yt_data:
@@ -384,7 +353,7 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
         )
     yt_media_download_btn.pack(
         side="right",
-        padx=10, 
+        padx=5, 
         pady=10
         )
     Hovertip(
@@ -404,7 +373,7 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
         )
     yt_media_download_sellect_btn.pack(
         side="right",
-        padx=10, 
+        padx=5, 
         pady=10
         )
     Hovertip(
@@ -414,9 +383,7 @@ def contentBox(dataTitle, dataImage, dataUrl, dataLength, dataAuthor, dataType):
         )
 
 
-# Function to add URL to list and show preview image
 def add_url():
-    # url = url_entry.get().strip()
     url = root.clipboard_get().strip()
     
     import json
@@ -437,10 +404,9 @@ def add_url():
     if not url and is_valid_youtube_url(url):
         return
     
-    # Get preview image from YouTube video
     try:
         
-        # status temizleme
+        # * status clear
         status_label.config(text="")
 
 
@@ -454,18 +420,12 @@ def add_url():
         import urllib.request
         import re
 
-        # Sayfanın HTML kodunu indirin
         html = urllib.request.urlopen(url)
         video_html = html.read().decode()
 
         def yt_time(video_html) :
-            # Süre bilgisini çıkarmak için uygun kalıp (pattern) oluşturuyoruz
             time_pattern = re.compile(r'itemprop="duration" content="PT(\d+H)?(\d+M)?(\d+S)')
-
-            # Uygun kalıpla eşleşen süre bilgisini alıyoruz
             time_match = time_pattern.search(video_html)
-
-            # Süre bilgisini ekrana yazdırıyoruz
             if time_match:
                 time = time_match.group(0)
                 matches = re.findall(r'PT(\d+M)?(\d+S)?', time)[0]
@@ -474,7 +434,6 @@ def add_url():
                 time = str(minutes) + ":" + str(seconds)
             else:
                 time = "--:--"
-            
             return time
         
         def yt_image(video_html) :
@@ -528,8 +487,6 @@ def add_url():
 
 # * window
 
-import ttkbootstrap as ttk 
-
 root = Tk()
 root.geometry("600x500")
 # root.minsize(600, 500)
@@ -542,20 +499,20 @@ container = tk.Frame(root)
 container.pack(fill="both", expand=True)
 
 # ? header
-header = tk.Frame(container , background="#D3ECF7", padx=10, pady=10)
+header = tk.Frame(container, background="#fff", padx=10, pady=10)
 header.pack(side="top", fill="both")
 
 # ? content
-content = tk.Frame(container, background="#B0A8B9", padx=5, pady=5)
+content = tk.Frame(container, background="#fff", padx=5, pady=5)
 content.pack(fill="both", expand=True)
 
 #----------------------------------
 # * Scrollbar
-scrollbar = ttk.Scrollbar(content, bootstyle="secondary-round")
+scrollbar = tk.Scrollbar(content)
 scrollbar.pack(side="right", fill="y")
 
 # * Canvas
-contentCanvas = ttk.Canvas(content, yscrollcommand=scrollbar.set)
+contentCanvas = tk.Canvas(content, yscrollcommand=scrollbar.set)
 contentCanvas.pack(side="top",fill="both", expand=True)
 
 
@@ -563,7 +520,7 @@ contentCanvas.pack(side="top",fill="both", expand=True)
 scrollbar.config(command=contentCanvas.yview)
 
 # * Add content to canvas
-content = ttk.Frame(contentCanvas)
+content = tk.Frame(contentCanvas)
 content.pack(fill="both", expand=True)
 content.bind("<Configure>", lambda e: contentCanvas.configure(scrollregion=contentCanvas.bbox("all")))
 
@@ -571,7 +528,7 @@ contentCanvas.create_window((0, 0), window=content)
 
 
 # ? footer
-footer = tk.Frame(container, background="#D3ECF7", pady=5)
+footer = tk.Frame(container, background="#B0A8B9", pady=5)
 footer.pack(side="bottom", fill="both")
 
 # ---------------------
@@ -581,18 +538,43 @@ footer.pack(side="bottom", fill="both")
 # * header
 
 import ttkbootstrap as ttk 
-from ttkbootstrap.constants import *
-
+from tkfontawesome import icon_to_image
 
 # https://fontawesome.com/v5/search?q=add&o=r&m=free
 # https://ttkbootstrap.readthedocs.io/en/latest/styleguide/checkbutton/#round-toggle-button
 # https://htmlcolorcodes.com/
 
 
+iconDownload = icon_to_image(
+    "download",
+    fill="#4267B2", 
+    scale_to_width=32
+    )
+iconDownload2 = icon_to_image(
+    "download", 
+    fill="#4267B2", 
+    scale_to_width=18
+    )
+iconYoutube = icon_to_image(
+    "searchengin", 
+    fill="#4267B2", 
+    scale_to_width=64
+    )
+iconAdd = icon_to_image(
+    "plus-circle", 
+    fill="#4267B2", 
+    scale_to_width=32
+    )
+iconSettings = icon_to_image("cogs", fill="#797D7F", scale_to_width=22)
+iconUpdate = icon_to_image("sync", fill="#797D7F", scale_to_width=18)
+iconInfo = icon_to_image("info-circle", fill="#797D7F", scale_to_width=18)
+iconClearOk = icon_to_image("trash-restore", fill="#797D7F", scale_to_width=16)
+iconClear = icon_to_image("trash-alt", fill="#797D7F", scale_to_width=16)
+iconClock = icon_to_image("clock", fill="#797D7F", scale_to_width=18)
 
-iconAdd = icon_to_image("plus-circle", fill="#4267B2", scale_to_width=32)
+
 add_url_btn = ttk.Button(header,image=iconAdd, bootstyle="secondary-outline", command=add_url)
-add_url_btn.pack(side=LEFT, padx=10)
+add_url_btn.pack(side="left", padx=10)
 Hovertip(add_url_btn,'Paste the copied url.', hover_delay=1000)
 
 status_label = tk.Label(header, text="", wraplength=300)
@@ -601,7 +583,6 @@ status_label.place(relx=0.5, rely=0.5, anchor="center")
 def media_download_all():
     yt_data = dataRead()
     for item in yt_data:
-        # print(item)
         media_download_sellect_check(item)
 
 def media_all_sellect():
@@ -613,7 +594,6 @@ def media_all_sellect():
     for item in content.winfo_children():
         item.destroy()
     for item in yt_data:
-        #* video kalite secme ekle
         contentBox(
             item["title"],
             item["preview_url"],
@@ -623,14 +603,14 @@ def media_all_sellect():
             item["type"],
             )
 
-iconDownload = icon_to_image("download", fill="#4267B2", scale_to_width=32)
+
 media_download_btn = ttk.Button(header,image=iconDownload, bootstyle="secondary-outline", command=media_download_all)
-media_download_btn.pack(side=RIGHT, padx=10)
+media_download_btn.pack(side="right", padx=10)
 Hovertip(media_download_btn,'Start download.', hover_delay=1000)
 
 media_download_sellect_data = tk.BooleanVar()
 media_download_sellect_btn = ttk.Checkbutton(header, text='Video / Sound', bootstyle="secondary-round-toggle", variable=media_download_sellect_data, command=media_all_sellect)
-media_download_sellect_btn.pack(side=RIGHT)
+media_download_sellect_btn.pack(side="right")
 Hovertip(media_download_sellect_btn,'Select media type.', hover_delay=1000)
 
 
@@ -640,22 +620,19 @@ media_leng.place(relx=0.5, rely=0.7, anchor="center")
 # * footer
 
 # ? settings button
-iconSettings = icon_to_image("cogs", fill="#797D7F", scale_to_width=22)
 settings_btn = ttk.Button(footer,image=iconSettings, bootstyle="secondary-outline", command=open_settings_window)
-settings_btn.pack(side=RIGHT, padx=5)
+settings_btn.pack(side="right", padx=5)
 Hovertip(settings_btn,'From here, you can make the settings.', hover_delay=1000)
 
 # ? update button
-iconUpdate = icon_to_image("sync", fill="#797D7F", scale_to_width=18)
 update_btn = ttk.Button(footer,image=iconUpdate, bootstyle="secondary-outline")
-update_btn.pack(side=RIGHT, padx=5)
+update_btn.pack(side="right", padx=5)
 Hovertip(update_btn,'Check for update.', hover_delay=1000)
 update_btn.config(state="disabled")
 
 # ? about button
-iconInfo = icon_to_image("info-circle", fill="#797D7F", scale_to_width=18)
 about_btn = ttk.Button(footer,image=iconInfo, bootstyle="secondary-outline", command=open_about_window)
-about_btn.pack(side=RIGHT, padx=5)
+about_btn.pack(side="right", padx=5)
 Hovertip(about_btn,'Software information.', hover_delay=1000)
 
 # -----
@@ -680,22 +657,19 @@ def download_destroy_clear():
 
 
 # ? download ok clear button
-iconClearOk = icon_to_image("trash-restore", fill="#797D7F", scale_to_width=16)
 clear_ok_btn = ttk.Button(footer,image=iconClearOk, bootstyle="secondary-outline", command=download_destroy_clear)
-clear_ok_btn.pack(side=LEFT, padx=5)
+clear_ok_btn.pack(side="left", padx=5)
 Hovertip(clear_ok_btn,'Clear downloads \nJust downloaded.', hover_delay=1000)
 clear_ok_btn.config(state="disabled")
 
 # ? clear all button
-iconClear = icon_to_image("trash-alt", fill="#797D7F", scale_to_width=16)
 clear_btn = ttk.Button(footer,image=iconClear, bootstyle="secondary-outline", command=destroy_all)
-clear_btn.pack(side=LEFT, padx=5)
+clear_btn.pack(side="left", padx=5)
 Hovertip(clear_btn,'Clean all.', hover_delay=1000)
 
 # ? slow download mode button
-iconClock = icon_to_image("clock", fill="#797D7F", scale_to_width=18)
 slow_download_btn = ttk.Button(footer,image=iconClock, bootstyle="secondary-outline")
-slow_download_btn.pack(side=LEFT, padx=5)
+slow_download_btn.pack(side="left", padx=5)
 Hovertip(slow_download_btn,'Slow download.', hover_delay=1000)
 slow_download_btn.config(state="disabled")
 
@@ -715,7 +689,6 @@ with open('data.json') as f:
 
 if len(yt_data) > 0:
     for item in yt_data:
-        #* video kalite secme ekle
         contentBox(
             item["title"],
             item["preview_url"],
@@ -727,11 +700,6 @@ if len(yt_data) > 0:
     media_leng.config(text= "Media : ( " + str(len(yt_data)) + " )" )
 else:
     # ? default content
-    iconYoutube = icon_to_image(
-        "searchengin", 
-        fill="#4267B2", 
-        scale_to_width=64
-        )
     content_null_icon = ttk.Label(
         container,
         image=iconYoutube
