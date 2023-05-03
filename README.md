@@ -1,6 +1,6 @@
 <br/>
 <p align="center">
-  <a href="https://github.com/ShaanCoding/ReadME-Generator">
+  <a href="https://github.com/EW-EndWall/MedDown">
     <img src="https://user-images.githubusercontent.com/43109779/235449577-f6394f65-286b-4ab5-a0f1-9cf91226bff7.png" alt="Logo" width="250">
   </a>
   
